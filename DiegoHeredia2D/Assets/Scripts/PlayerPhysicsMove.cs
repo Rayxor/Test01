@@ -6,15 +6,25 @@ public class PlayerPhysicsMove : MonoBehaviour
 {
     public float moveSpeed = 15;
     public Vector2 limits = new Vector2(10, 7);
-    Vector2 ShapeLimits { get { return limits - ((colliderSize * transform.localScale) / 2); } }
+    Vector2 shapeLimits { get { return limits - ((colliderSize * transform.localScale) / 2); } }
     Vector2 colliderSize;
     Rigidbody2D rb2D;
     Vector2 currentMouseWorldPos;
-
-    public Vector2 mousePlayerDelta { get { return currentMouseWorldPos - rb2D.position; } }
+    public Vector2 current2DPos { get { return transform.position; } }
+    public Vector2 mousePlayerDelta
+    {
+        get
+        {
+            return !rb2D ? Vector2.zero : currentMouseWorldPos - rb2D.position;
+        }
+    }
 
     // disponible como un campo en el componente script
     public GameObject bulletPrefab;
+
+    public float shotDelay = 0;
+    public bool isOnCooldown = false;
+    public float fireRate = 2.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -34,8 +44,8 @@ public class PlayerPhysicsMove : MonoBehaviour
         //If chequea si existe
         if (rb2D) {
             Vector2 movement = rb2D.position + ((horMove + verMove).normalized * moveSpeed * Time.fixedDeltaTime);
-            movement.x = Mathf.Clamp(movement.x, -ShapeLimits.x, ShapeLimits.x);
-            movement.y = Mathf.Clamp(movement.y, -ShapeLimits.y, ShapeLimits.y);
+            movement.x = Mathf.Clamp(movement.x, -shapeLimits.x, shapeLimits.x);
+            movement.y = Mathf.Clamp(movement.y, -shapeLimits.y, shapeLimits.y);
             rb2D.MovePosition (movement);
         }
         
@@ -49,10 +59,29 @@ public class PlayerPhysicsMove : MonoBehaviour
     void Update () {
         currentMouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        if (Input.GetMouseButtonDown(0)) {
+        if (!isOnCooldown)
+        {
+            Input.GetMouseButton(0);
+            Debug.Log("Shoot!");
+            isOnCooldown = true;
+
+        }
+
+        shotDelay += Time.deltaTime;
+        if (shotDelay >= 2){
+            shotDelay = 0;
+        }
+
+        /*if (Input.GetMouseButtonDown(0)) {
             Debug.Log("Bang");
             Instantiate(bulletPrefab, Vector3.zero, Quaternion.identity);
-        }
+        }*/
+
+       
+    }
+
+    void Shoot()
+    {
 
     }
 
@@ -63,7 +92,7 @@ public class PlayerPhysicsMove : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(Vector3.zero, limits * 2);
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireCube(Vector3.zero, ShapeLimits * 2);
+        Gizmos.DrawWireCube(Vector3.zero, shapeLimits * 2);
         Gizmos.DrawLine(transform.position, currentMouseWorldPos);
         Gizmos.DrawSphere(currentMouseWorldPos, 0.25f);
     }
