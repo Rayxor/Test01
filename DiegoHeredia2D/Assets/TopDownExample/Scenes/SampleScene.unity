@@ -899,6 +899,7 @@ MonoBehaviour:
     type: 3}
   shotDelay: 1.3
   isOnCooldown: 0
+  fireRate: 2
 --- !u!50 &995986777
 Rigidbody2D:
   serializedVersion: 4
@@ -1145,7 +1146,7 @@ GameObject:
   - component: {fileID: 1695596493}
   - component: {fileID: 1695596492}
   m_Layer: 0
-  m_Name: Triangle (2)
+  m_Name: LineHazard1
   m_TagString: Hazard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1163,6 +1164,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cdc03dbc6d164549ba505a455043a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 4
+  pathPoints:
+  - {x: -4.49, y: -3.88, z: 0}
+  - {x: -3, y: -4, z: 0}
+  - {x: -2, y: -3, z: 0}
+  - {x: -1, y: -4, z: 0}
 --- !u!61 &1695596493
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1245,7 +1252,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1695596491}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.53, y: -3.88, z: 0}
+  m_LocalPosition: {x: -4.49, y: -3.88, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
