@@ -21,6 +21,7 @@ public class CamMovement : MonoBehaviour
     Transform tempTarget;
     float tempSpeed;
 
+    float targetOrtographicSize = 5;
 
     // Start is called before the first frame update
     void Start () {
@@ -37,6 +38,13 @@ public class CamMovement : MonoBehaviour
             temp.z = transform.position.z;
             transform.position = temp;
         }
+    }
+
+    public void SetTempTarget(Transform target = null, float speed = 0, float size =5)
+    {
+        tempTarget = target;
+        tempSpeed = speed;
+        targetOrtographicSize = size;
     }
 
     void OnDrawGizmos() {

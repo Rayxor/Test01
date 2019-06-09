@@ -11,20 +11,15 @@ public class PlayerPhysicsMove : MonoBehaviour
     Rigidbody2D rb2D;
     Vector2 currentMouseWorldPos;
     public Vector2 current2DPos { get { return transform.position; } }
-    public Vector2 mousePlayerDelta
-    {
-        get
-        {
-            return !rb2D ? Vector2.zero : currentMouseWorldPos - rb2D.position;
-        }
-    }
+    public Vector2 mousePlayerDelta { get { return !rb2D ? Vector2.zero : currentMouseWorldPos - rb2D.position;} }
 
-    // disponible como un campo en el componente script
+    public float bulletOriginDist = 1.3f;
     public GameObject bulletPrefab;
 
-    public float shotDelay = 0;
+    public float fireRate = 2;
+    public float cooldownTimer = 0;
     public bool isOnCooldown = false;
-    public float fireRate = 2.0f;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -53,7 +48,15 @@ public class PlayerPhysicsMove : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other){
-        Debug.Log("Colisiono");
+       if (other.CompareTag("Hazard"))
+        {
+            //TODO: Destroy
+        }
+       if (other.CompareTag("CamArea"))
+        {
+            CamArea targetArea = other.GetComponent<CamArea>();
+            Camera.main.GetComponent<CamMovement>().SetTempTarget (targetArea.transform, targetArea.centerSpeed, targetArea.targetSize);
+        }
     }
 
     void Update () {
@@ -61,30 +64,36 @@ public class PlayerPhysicsMove : MonoBehaviour
 
         if (!isOnCooldown)
         {
-            Input.GetMouseButton(0);
-            Debug.Log("Shoot!");
-            isOnCooldown = true;
-
+            if (Input.GetMouseButton(0))
+            {
+                Shoot();
+                isOnCooldown = true;
+            }
         }
+        else
+        {
+            cooldownTimer += Time.deltaTime;
+            if (cooldownTimer >= 1 / fireRate)
+            {
+                cooldownTimer = 0;
+                isOnCooldown = false;
+            }
+        }           
 
-        shotDelay += Time.deltaTime;
-        if (shotDelay >= 2){
-            shotDelay = 0;
-        }
-
-        /*if (Input.GetMouseButtonDown(0)) {
-            Debug.Log("Bang");
-            Instantiate(bulletPrefab, Vector3.zero, Quaternion.identity);
-        }*/
-
-       
+               
     }
 
     void Shoot()
     {
-
+        Debug.Log("Bang!");
+        GameObject bullet = Instantiate(bulletPrefab, current2DPos + (mousePlayerDelta.normalized * bulletOriginDist), Quaternion.identity);
+        bullet.GetComponent<BulletBehav>().direction = mousePlayerDelta.normalized;
     }
 
+    void OnGUI()
+    {
+        GUI.Label(new Rect(10, 10, 120, 50), "MousePos: " + currentMouseWorldPos);    
+    }
 
     void OnDrawGizmos()
     {
