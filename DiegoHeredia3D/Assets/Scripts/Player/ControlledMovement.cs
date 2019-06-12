@@ -6,18 +6,21 @@ public class ControlledMovement : MovScript
 {
     public float gravity;
     public CharacterController characterController;
+    Animator playerAnimator;
     float verticalSpeed;
     public float jumpForce = 10;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerAnimator = transform.GetChild(0).GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        RaycastHit info;
+        characterController.Raycast(new Ray(transform.GetChild(0).position, Vector3.down * 5), out info);
         if (!characterController.isGrounded)
         {
             verticalSpeed -= gravity * Time.deltaTime;
@@ -29,6 +32,7 @@ public class ControlledMovement : MovScript
             {
                 Debug.Log(verticalSpeed);
                 verticalSpeed = jumpForce;
+                playerAnimator.SetTrigger("Jump");
                 Debug.Log(verticalSpeed);
             }
         }
